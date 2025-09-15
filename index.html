@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYable IPG React Native SDK Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e4e4e4;
+            background-color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: #e4e4e4;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .toc {
+            background: #2d3748;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .toc h2 {
+            color: #63b3ed;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #63b3ed;
+            padding-bottom: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .toc li {
+            padding: 8px 0;
+        }
+
+        .toc a {
+            color: #63b3ed;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: #90cdf4;
+            text-decoration: underline;
+        }
+
+        section {
+            background: #2d3748;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        section h2 {
+            color: #63b3ed;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #63b3ed;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        section h3 {
+            color: #e2e8f0;
+            margin: 25px 0 15px 0;
+            font-size: 1.4rem;
+        }
+
+        section h4 {
+            color: #cbd5e0;
+            margin: 20px 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #a0aec0;
+        }
+
+        .code-block {
+            background: #0f1419;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #63b3ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #e2e8f0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #63b3ed, transparent);
+        }
+
+        .code-block.sh,
+        .code-block.js,
+        .code-block.tsx,
+        .code-block.json {
+            background: #0f1419;
+            color: #e2e8f0;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #63b3ed;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight {
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #fbbf24;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .api-endpoint {
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-left: 4px solid #3182ce;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .endpoint-method {
+            font-weight: bold;
+            color: #63b3ed;
+            margin-bottom: 5px;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #a0aec0;
+        }
+
+        .support-info {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: #e4e4e4;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .support-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .support-info p {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                padding: 30px 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            .toc ul {
+                grid-template-columns: 1fr;
+            }
+
+            .code-block {
+                font-size: 12px;
+                padding: 15px;
+                margin: 15px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            section h2 {
+                font-size: 1.5rem;
+            }
+
+            section h3 {
+                font-size: 1.2rem;
+            }
+
+            .code-block {
+                font-size: 11px;
+                padding: 12px;
+                margin: 12px 0;
+            }
+
+            .highlight,
+            .api-endpoint,
+            .flow-diagram {
+                padding: 15px;
+                margin: 15px 0;
+            }
+        }
+
+        .flow-diagram {
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .flow-diagram ol {
+            counter-reset: step-counter;
+        }
+
+        .flow-diagram li {
+            counter-increment: step-counter;
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .flow-diagram li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #63b3ed;
+            color: #1a202c;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PAYable IPG React Native SDK</h1>
+            <p class="subtitle">A comprehensive React Native SDK for integrating Internet Payment Gateway (IPG) functionality into your mobile applications. This SDK supports one-time payments and recurring payments with a secure, user-friendly interface.</p>
+        </header>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#one-time-payments">One-Time Payments</a></li>
+                <li><a href="#recurring-payments">Recurring Payments</a></li>
+                <li><a href="#tokenized-payments">Tokenized Payments</a></li>
+                <li><a href="#merchant-notifications">Merchant Notifications</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#security">Security & Compliance</a></li>
+                <li><a href="#api-reference">API Reference</a></li>
+            </ul>
+        </div>
+
+        <section id="installation">
+            <h2>Installation</h2>
+            <div class="code-block sh">npm install ipg-reactnative-sdk</div>
+        </section>
+
+        <section id="getting-started">
+            <h2>Getting Started</h2>
+            <ol>
+                <li>Import the SDK in your React Native application:</li>
+            </ol>
+            <div class="code-block js">import PayableIPG from 'ipg-reactnative-sdk';</div>
+
+            <ol start="2">
+                <li>Initialize the SDK with your merchant credentials:</li>
+            </ol>
+            <div class="code-block js">const data = {
+  environment: 'sandbox', // 'sandbox' | 'qa' | 'dev' | 'production'
+  logoUrl: 'https://your-logo-url.com/logo.png',
+  returnUrl: 'https://your-return-url.com',
+  webhookUrl: 'https://your-webhook-url.com',
+  merchantKey: 'YOUR_MERCHANT_KEY',
+  merchantToken: 'YOUR_MERCHANT_TOKEN',
+};</div>
+        </section>
+
+        <section id="configuration">
+            <h2>Configuration</h2>
+            <h3>Required Configuration</h3>
+            <ul>
+                <li><strong>environment</strong>: SDK environment ('sandbox', 'qa', 'dev', or 'production')</li>
+                <li><strong>logoUrl</strong>: Your merchant logo URL</li>
+                <li><strong>returnUrl</strong>: URL to redirect users after payment completion</li>
+                <li><strong>webhookUrl</strong>: URL to receive payment notifications</li>
+                <li><strong>merchantKey</strong>: Your merchant key provided by PAYable</li>
+                <li><strong>merchantToken</strong>: Your merchant token provided by PAYable</li>
+            </ul>
+        </section>
+
+        <section id="one-time-payments">
+            <h2>One-Time Payments</h2>
+
+            <h3>Flow Diagram</h3>
+            <div class="flow-diagram">
+                <ol>
+                    <li>Initialize payment with required parameters</li>
+                    <li>Generate checksum value</li>
+                    <li>Present payment screen to user</li>
+                    <li>Process payment</li>
+                    <li>Handle payment completion/error</li>
+                </ol>
+            </div>
+
+            <h3>Required Parameters</h3>
+            <div class="code-block js">const paymentData = {
+  paymentType: "1", // 1 for one-time payment
+  invoiceId: "INV123456", // Unique invoice ID
+  amount: "100.00", // Payment amount with 2 decimal places
+  currencyCode: "LKR", // Currency code
+  orderDescription: "Payment for order #123",
+  customerFirstName: "John",
+  customerLastName: "Doe",
+  customerMobilePhone: "0771234567",
+  customerEmail: "john.doe@example.com",
+  billingAddressStreet: "123 Main St",
+  billingAddressCity: "Colombo",
+  billingAddressCountry: "LKA",
+  checkValue: "GENERATED_CHECKSUM" // Generated using getCheckValue()
+};</div>
+
+            <h3>Checksum Generation</h3>
+            <p>The checksum is generated using SHA-512 hashing algorithm. Here's the process:</p>
+            <div class="code-block js">import CryptoJS from 'crypto-js';
+
+const getCheckValue = (
+  merchantKey: string,
+  merchantToken: string,
+  invoiceId: string,
+  amount: string,
+  currencyCode: string
+) => {
+  // Step 1: Generate hash from merchant token
+  const hash1 = CryptoJS.SHA512(merchantToken)
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  // Step 2: Generate final checksum
+  const checkValue = CryptoJS.SHA512(
+    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${hash1}`
+  )
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  return checkValue;
+};</div>
+
+            <h3>Payment Completion Response</h3>
+            <div class="code-block json">{
+  merchantKey: "YOUR_MERCHANT_KEY",
+  payableOrderId: "oid-XXXXXXXX-XXX-XXXX-XXXX-XXXX",
+  payableTransactionId: "XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXX",
+  payableAmount: "100.00",
+  payableCurrency: "LKR",
+  invoiceNo: "INV123456",
+  statusCode: 1,
+  statusMessage: "SUCCESS",
+  paymentType: 1,
+  paymentMethod: 1,
+  paymentScheme: "MASTERCARD",
+  custom1: "optional data",
+  custom2: "optional data",
+  cardHolderName: "John Doe",
+  cardNumber: "512345xxxxxx0008",
+  checkValue: "GENERATED_CHECKSUM"
+}</div>
+
+            <h3>React Native Integration Example (One-Time Payment)</h3>
+            <div class="code-block tsx">import React, { useMemo, useState } from 'react';
+import { View, Button, Alert } from 'react-native';
+import PayableIPG from 'ipg-reactnative-sdk';
+import CryptoJS from 'crypto-js';
+
+const getCheckValue = (
+  merchantKey: string,
+  merchantToken: string,
+  invoiceId: string,
+  amount: string,
+  currencyCode: string
+) => {
+  const hash1 = CryptoJS.SHA512(merchantToken)
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  return CryptoJS.SHA512(
+    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${hash1}`
+  )
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+};
+
+export default function OneTimePaymentExample() {
+  const [showIpg, setShowIpg] = useState(false);
+
+  const PAYableIPGClient = useMemo(
+    () => ({
+      environment: 'sandbox', // 'sandbox' | 'qa' | 'dev' | 'production'
+      logoUrl: 'https://your-logo-url.com/logo.png',
+      returnUrl: 'https://your-return-url.com',
+      webhookUrl: 'https://your-webhook-url.com',
+      merchantKey: 'YOUR_MERCHANT_KEY',
+      merchantToken: 'YOUR_MERCHANT_TOKEN',
+    }),
+    []
+  );
+
+  const payment = useMemo(() => {
+    const amount = '100.00';
+    const invoiceId = `INV-${Date.now()}`;
+    const currencyCode = 'LKR';
+
+    return {
+      paymentType: '1',
+      invoiceId,
+      amount,
+      currencyCode,
+      orderDescription: 'Payment for order #123',
+      customerFirstName: 'John',
+      customerLastName: 'Doe',
+      customerMobilePhone: '0771234567',
+      customerEmail: 'john.doe@example.com',
+      billingAddressStreet: '123 Main St',
+      billingAddressCity: 'Colombo',
+      billingAddressCountry: 'LKA',
+      checkValue: getCheckValue(
+        PAYableIPGClient.merchantKey,
+        PAYableIPGClient.merchantToken,
+        invoiceId,
+        amount,
+        currencyCode
+      ),
+    };
+  }, [PAYableIPGClient]);
+
+  const handlePaymentStarted = () => {
+    // Optional: track analytics
+  };
+
+  const handlePaymentCompleted = (result: any) => {
+    setShowIpg(false);
+    Alert.alert('Payment Success', JSON.stringify(result, null, 2));
+  };
+
+  const handlePaymentError = (error: any) => {
+    setShowIpg(false);
+    Alert.alert('Payment Error', JSON.stringify(error, null, 2));
+  };
+
+  const handlePaymentCancelled = () => {
+    setShowIpg(false);
+  };
+
+  return (
+    &lt;View style={{ flex: 1 }}>
+      {!showIpg && (
+        &lt;Button title="Pay LKR 100.00" onPress={() => setShowIpg(true)} />
+      )}
+
+      {showIpg && (
+        &lt;PayableIPG
+          PAYableIPGClient={PAYableIPGClient}
+          packageName={"com.yourapp"}
+          paymentType={payment.paymentType}
+          invoiceId={payment.invoiceId}
+          amount={payment.amount}
+          currencyCode={payment.currencyCode}
+          orderDescription={payment.orderDescription}
+          customerFirstName={payment.customerFirstName}
+          customerLastName={payment.customerLastName}
+          customerMobilePhone={payment.customerMobilePhone}
+          customerEmail={payment.customerEmail}
+          billingAddressStreet={payment.billingAddressStreet}
+          billingAddressCity={payment.billingAddressCity}
+          billingAddressCountry={payment.billingAddressCountry}
+          checkValue={payment.checkValue}
+          onPaymentStarted={handlePaymentStarted}
+          onPaymentCompleted={handlePaymentCompleted}
+          onPaymentError={handlePaymentError}
+          onPaymentCancelled={handlePaymentCancelled}
+        />
+      )}
+    &lt;/View>
+  );
+}</div>
+        </section>
+
+        <section id="recurring-payments">
+            <h2>Recurring Payments</h2>
+
+            <h3>Flow Overview</h3>
+            <div class="flow-diagram">
+                <ol>
+                    <li>Initialize recurring payment with required parameters</li>
+                    <li>Generate checksum value</li>
+                    <li>Present payment screen to user</li>
+                    <li>Process initial payment</li>
+                    <li>Set up recurring schedule</li>
+                    <li>Handle recurring payments</li>
+                </ol>
+            </div>
+
+            <h3>Required Parameters</h3>
+            <div class="code-block js">const recurringPaymentData = {
+  paymentType: "2", // 2 for recurring payment
+  invoiceId: "INV123456",
+  amount: "100.00",
+  currencyCode: "LKR",
+  orderDescription: "Monthly subscription",
+  customerFirstName: "John",
+  customerLastName: "Doe",
+  customerMobilePhone: "0771234567",
+  customerEmail: "john.doe@example.com",
+  billingAddressStreet: "123 Main St",
+  billingAddressCity: "Colombo",
+  billingAddressCountry: "LKA",
+  startDate: "2024-01-01",
+  endDate: "2024-12-31", // or "FOREVER"
+  recurringAmount: "100.00",
+  interval: "MONTHLY", // or "ANNUALLY"
+  isRetry: "1", // 1 for true, 0 for false
+  retryAttempts: "3",
+  doFirstPayment: "1", // 1 for true, 0 for false
+  checkValue: "GENERATED_CHECKSUM"
+};</div>
+
+            <h3>Checksum Generation for Recurring Payments</h3>
+            <div class="code-block js">const getRecurringCheckValue = (
+  merchantKey: string,
+  merchantToken: string,
+  invoiceId: string,
+  amount: string,
+  currencyCode: string,
+  customerRefNo: string
+) => {
+  const hash1 = CryptoJS.SHA512(merchantToken)
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  const checkValue = CryptoJS.SHA512(
+    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${customerRefNo}|${hash1}`
+  )
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  return checkValue;
+};</div>
+        </section>
+
+        <section id="tokenized-payments">
+            <h2>Tokenized Payments</h2>
+
+            <h3>Overview</h3>
+            <p>Tokenized payments allow merchants to securely store customer payment information for future use. This feature enhances the customer experience by eliminating the need to re-enter payment details for subsequent transactions while maintaining the highest security standards.</p>
+
+            <h3>Token Creation Flow</h3>
+            <div class="flow-diagram">
+                <ol>
+                    <li>Customer makes initial payment and opts to save card</li>
+                    <li>System generates a unique token for the card</li>
+                    <li>Token is securely stored in PAYable's vault</li>
+                    <li>Token ID is returned to merchant for future use</li>
+                </ol>
+            </div>
+
+            <h3>Required Parameters for Tokenized Payment</h3>
+            <div class="code-block js">const tokenPaymentData = {
+  paymentType: "3", // 3 for tokenized payment
+  invoiceId: "INV123456",
+  amount: "100.00",
+  currencyCode: "LKR",
+  orderDescription: "Token creation payment",
+  customerFirstName: "John",
+  customerLastName: "Doe",
+  customerMobilePhone: "0771234567",
+  customerEmail: "john.doe@example.com",
+  billingAddressStreet: "123 Main St",
+  billingAddressCity: "Colombo",
+  billingAddressCountry: "LKA",
+  isSaveCard: "1", // 1 to save card for future use
+  customerRefNo: "CUST123456", // Unique customer reference
+  checkValue: "GENERATED_CHECKSUM"
+};</div>
+
+            <h3>Checksum Generation for Token Payments</h3>
+            <div class="code-block js">const getTokenCheckValue = (
+  merchantKey: string,
+  merchantToken: string,
+  invoiceId: string,
+  amount: string,
+  currencyCode: string,
+  customerRefNo: string,
+  tokenId?: string
+) => {
+  const hash1 = CryptoJS.SHA512(merchantToken)
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  const checkValue = CryptoJS.SHA512(
+    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${customerRefNo}|${tokenId || ''}|${hash1}`
+  )
+    .toString(CryptoJS.enc.Hex)
+    .toUpperCase();
+
+  return checkValue;
+};</div>
+
+            <h3>Authentication Headers</h3>
+            <div class="code-block json">{
+  'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
+  'Content-Type': 'application/json',
+  'X-Merchant-Key': 'YOUR_MERCHANT_KEY'
+}</div>
+
+            <h3>API Endpoints</h3>
+
+            <h4>Token Creation</h4>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST /api/v1/tokens</div>
+                <div class="code-block json">Content-Type: application/json
+
+Request Body:
+{
+  "merchantKey": "YOUR_MERCHANT_KEY",
+  "invoiceId": "INV123456",
+  "amount": "100.00",
+  "currencyCode": "LKR",
+  "customerRefNo": "CUST123456",
+  "checkValue": "GENERATED_CHECKSUM"
+}
+
+Response:
+{
+  "status": "SUCCESS",
+  "tokenId": "TOKEN123456",
+  "expiryDate": "2025-12-31"
+}</div>
+            </div>
+
+            <h4>Token Usage</h4>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST /api/v1/payments/token</div>
+                <div class="code-block json">Content-Type: application/json
+
+Request Body:
+{
+  "merchantKey": "YOUR_MERCHANT_KEY",
+  "invoiceId": "INV123456",
+  "amount": "100.00",
+  "currencyCode": "LKR",
+  "tokenId": "TOKEN123456",
+  "customerRefNo": "CUST123456",
+  "checkValue": "GENERATED_CHECKSUM"
+}
+
+Response:
+{
+  "status": "SUCCESS",
+  "transactionId": "TXN123456",
+  "amount": "100.00",
+  "currency": "LKR"
+}</div>
+            </div>
+
+            <h4>1. List Saved Cards</h4>
+            <p>Retrieve all saved cards for a customer.</p>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST {{rootUrl}}/ipg/v2/tokenize/listCard</div>
+                <strong>Headers Required:</strong>
+                <div class="code-block">Content-Type: application/json</div>
+                <strong>Required Parameters:</strong>
+                <ul>
+                    <li><code>merchantId</code> - Your merchant ID</li>
+                    <li><code>customerId</code> - Customer ID</li>
+                    <li><code>checkValue</code> - Security hash</li>
+                </ul>
+                <strong>CheckValue Generation:</strong>
+                <div class="code-block">SHA512(merchantId|customerId|SHA512(merchantToken))</div>
+            </div>
+
+            <h4>2. Delete Saved Card</h4>
+            <p>Remove a saved card from customer's account.</p>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST {{rootUrl}}/ipg/v2/tokenize/deleteCard</div>
+                <strong>Headers Required:</strong>
+                <div class="code-block">Content-Type: application/json
+Authorization: Bearer {access_token}</div>
+                <strong>Required Parameters:</strong>
+                <ul>
+                    <li><code>merchantId</code> - Your merchant ID</li>
+                    <li><code>customerId</code> - Customer ID</li>
+                    <li><code>tokenId</code> - Token ID to delete</li>
+                    <li><code>checkValue</code> - Security hash</li>
+                </ul>
+                <strong>CheckValue Generation:</strong>
+                <div class="code-block">SHA512(merchantId|customerId|tokenId|SHA512(merchantToken))</div>
+            </div>
+
+            <h4>3. Edit Saved Card</h4>
+            <p>Update card nickname or set as default card.</p>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST {{rootUrl}}/ipg/v2/tokenize/editCard</div>
+                <strong>Headers Required:</strong>
+                <div class="code-block">Content-Type: application/json
+Authorization: Bearer {access_token}</div>
+                <strong>How to Generate JWT Access Token:</strong>
+                <ol>
+                    <li>Create Basic Auth token: <code>base64(businessKey:businessToken)</code></li>
+                    <li>POST to <code>{{rootUrl}}/ipg/v2/auth/tokenize</code> with headers:
+                        <div class="code-block">Content-Type: application/json
+Authorization: {basicAuthToken}</div>
+                        Body: <code>{"grant_type": "client_credentials"}</code></li>
+                    <li>Extract <code>accessToken</code> from response and use in Authorization header</li>
+                </ol>
+                <strong>Required Parameters:</strong>
+                <ul>
+                    <li><code>merchantId</code> - Your merchant ID</li>
+                    <li><code>customerId</code> - Customer ID</li>
+                    <li><code>tokenId</code> - Token ID to edit</li>
+                    <li><code>nickName</code> - Optional nickname for the card</li>
+                    <li><code>isDefaultCard</code> - Set as default card (0 or 1)</li>
+                    <li><code>checkValue</code> - Security hash</li>
+                </ul>
+            </div>
+
+            <h4>4. Pay with Saved Card</h4>
+            <p>Process payment using a previously saved card token.</p>
+            <div class="api-endpoint">
+                <div class="endpoint-method">POST {{rootUrl}}/ipg/v2/tokenize/pay</div>
+                <strong>Headers Required:</strong>
+                <div class="code-block">Content-Type: application/json
+Authorization: Bearer {access_token}</div>
+                <strong>How to Generate Access Token:</strong>
+                <ol>
+                    <li>Create Basic Auth token: <code>base64(businessKey:businessToken)</code></li>
+                    <li>POST to <code>{{rootUrl}}/ipg/v2/auth/tokenize</code> with headers:
+                        <div class="code-block">Content-Type: application/json
+Authorization: {basicAuthToken}</div>
+                        Body: <code>{"grant_type": "client_credentials"}</code></li>
+                    <li>Extract <code>accessToken</code> from response and use in Authorization header</li>
+                </ol>
+                <strong>Required Parameters:</strong>
+                <ul>
+                    <li><code>merchantId</code> - Your merchant ID</li>
+                    <li><code>customerId</code> - Customer ID</li>
+                    <li><code>tokenId</code> - Token ID to use for payment</li>
+                    <li><code>invoiceId</code> - Invoice ID</li>
+                    <li><code>amount</code> - Payment amount</li>
+                    <li><code>currencyCode</code> - Currency code</li>
+                    <li><code>checkValue</code> - Security hash</li>
+                    <li><code>webhookUrl</code> - Webhook URL for notifications</li>
+                </ul>
+                <strong>CheckValue Generation:</strong>
+                <div class="code-block">SHA512(merchantId|invoiceId|amount|currencyCode|customerId|tokenId|SHA512(merchantToken))</div>
+            </div>
+        </section>
+
+        <section id="merchant-notifications">
+            <h2>Merchant Notifications</h2>
+
+            <h3>Webhook Setup</h3>
+            <ol>
+                <li>Configure your webhook endpoint in the SDK initialization</li>
+                <li>Implement webhook handler to process notifications</li>
+                <li>Validate incoming notifications using checksum</li>
+            </ol>
+
+            <h3>Webhook Payload Structure</h3>
+            <div class="code-block json">{
+  merchantKey: "YOUR_MERCHANT_KEY",
+  payableOrderId: "oid-XXXXXXXX-XXX-XXXX-XXXX-XXXX",
+  payableTransactionId: "XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXX",
+  payableAmount: "100.00",
+  payableCurrency: "LKR",
+  invoiceNo: "INV123456",
+  statusCode: 1,
+  statusMessage: "SUCCESS",
+  paymentType: 1,
+  paymentMethod: 1,
+  paymentScheme: "MASTERCARD",
+  custom1: "optional data",
+  custom2: "optional data",
+  cardHolderName: "John Doe",
+  cardNumber: "512345xxxxxx0008",
+  checkValue: "GENERATED_CHECKSUM"
+}</div>
+
+            <h3>Webhook Response</h3>
+            <div class="code-block json">{
+  "Status": 200
+}</div>
+        </section>
+
+        <section id="error-handling">
+            <h2>Error Handling</h2>
+
+            <h3>Common Error Codes</h3>
+            <ul>
+                <li><strong>3009</strong>: Field validation error</li>
+                <li><strong>400</strong>: Bad request</li>
+                <li><strong>500</strong>: Server error</li>
+            </ul>
+
+            <h3>Error Response Format</h3>
+            <div class="code-block json">{
+  status: 3009,
+  success: false,
+  error: {
+    fieldName: ["Error message"]
+  }
+}</div>
+        </section>
+
+        <section id="security">
+            <h2>Security & Compliance</h2>
+
+            <h3>Important Security Notes</h3>
+            <ul>
+                <li><strong>merchantToken</strong> is a <strong>secret</strong> shared by PAYable for your merchant</li>
+                <li>Use exact field order and string concatenation with <code>|</code> as the delimiter</li>
+                <li>Always validate webhook responses using checkValue</li>
+                <li>Store tokens securely in your database</li>
+                <li>Use HTTPS for all communications</li>
+                <li>Never expose your merchantToken in client-side code</li>
+            </ul>
+
+            <h3>CheckValue Validation</h3>
+            <div class="code-block js">// Validate webhook response
+function validateWebhook(webhookData, merchantToken) {
+  const calculatedCheckValue = CryptoJS.SHA512(
+    webhookData.merchantKey +
+      "|" +
+      webhookData.payableOrderId +
+      "|" +
+      webhookData.payableTransactionId +
+      "|" +
+      webhookData.payableAmount +
+      "|" +
+      webhookData.payableCurrency +
+      "|" +
+      webhookData.invoiceNo +
+      "|" +
+      webhookData.statusCode +
+      "|" +
+      CryptoJS.SHA512(merchantToken).toString().toUpperCase()
+  )
+    .toString()
+    .toUpperCase();
+
+  return calculatedCheckValue === webhookData.checkValue;
+}</div>
+        </section>
+
+        <section id="api-reference">
+            <h2>API Reference</h2>
+
+            <h3>PayableIPG Component</h3>
+            <div class="code-block js">&lt;PayableIPG
+  PAYableIPGClient={data}
+  packageName={packageName}
+  paymentType={paymentType}
+  invoiceId={invoiceId}
+  amount={amount}
+  currencyCode={currencyCode}
+  orderDescription={orderDescription}
+  // ... other props
+  onPaymentStarted={handlePaymentStarted}
+  onPaymentCompleted={handlePaymentCompleted}
+  onPaymentError={handlePaymentError}
+  onPaymentCancelled={handlePaymentCancelled}
+/&gt;</div>
+
+            <h3>Event Handlers</h3>
+            <ul>
+                <li><code>onPaymentStarted</code>: Called when payment process begins</li>
+                <li><code>onPaymentCompleted</code>: Called when payment is successful</li>
+                <li><code>onPaymentError</code>: Called when payment fails</li>
+                <li><code>onPaymentCancelled</code>: Called when user cancels payment</li>
+            </ul>
+        </section>
+
+        <div class="support-info">
+            <h3>Support</h3>
+            <p>📞 Support: +94 11 777 6 777</p>
+            <p>🌐 Website: <a href="https://www.payable.lk" style="color: white; text-decoration: underline;">https://www.payable.lk</a></p>
+        </div>
+    </div>
+</body>
+</html>
