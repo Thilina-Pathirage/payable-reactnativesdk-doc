@@ -691,6 +691,7 @@ export default function OneTimePaymentExample() {
 
             <h3>Sample Tokenized Payment</h3>
             <div class="code-block js">const payment = {
+  environment: 'sandbox', // 'sandbox' | 'qa' | 'dev' | 'production'
   checkValue: "Your Check Value", // Use getCheckValueToken() for tokenization
   orderDescription: "Payment for furni",
   invoiceId: "INVGl2lrQHEEm",
