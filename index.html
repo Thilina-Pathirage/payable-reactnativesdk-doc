@@ -453,6 +453,9 @@
 
             <h3>Checksum Generation</h3>
             <p>The checksum is generated using SHA-512 hashing algorithm. Here's the process:</p>
+
+            <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|UPPERCASE(SHA512[merchantToken])])</code></p>
+
             <div class="code-block js">import CryptoJS from 'crypto-js';
 
 const getCheckValue = (
@@ -656,6 +659,9 @@ export default function OneTimePaymentExample() {
 };</div>
 
             <h3>Checksum Generation for Recurring Payments</h3>
+
+            <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|customerRefNo|UPPERCASE(SHA512[merchantToken])])</code></p>
+
             <div class="code-block js">const getRecurringCheckValue = (
   merchantKey: string,
   merchantToken: string,
@@ -704,6 +710,9 @@ export default function OneTimePaymentExample() {
 };</div>
 
             <h3>Checksum Generation for Token Payments</h3>
+
+            <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|customerRefNo|tokenId|UPPERCASE(SHA512[merchantToken])])</code></p>
+
             <div class="code-block js">const getTokenCheckValue = (
   merchantKey: string,
   merchantToken: string,
