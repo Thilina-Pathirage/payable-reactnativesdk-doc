@@ -382,29 +382,6 @@ const getTokenCheckValue = (
 
 ### API Endpoints
 
-#### Token Creation
-```js
-POST /api/v1/tokens
-Content-Type: application/json
-
-Request Body:
-{
-  "merchantKey": "YOUR_MERCHANT_KEY",
-  "invoiceId": "INV123456",
-  "amount": "100.00",
-  "currencyCode": "LKR",
-  "customerRefNo": "CUST123456",
-  "checkValue": "GENERATED_CHECKSUM"
-}
-
-Response:
-{
-  "status": "SUCCESS",
-  "tokenId": "TOKEN123456",
-  "expiryDate": "2025-12-31"
-}
-```
-
 #### Token Usage
 ```js
 POST /api/v1/payments/token

@@ -270,7 +270,7 @@ Content-Type: application/json
 **CheckValue Generation:**
 
 ```
-SHA512(merchantId|customerId|SHA512(merchantToken))
+UPPERCASE(SHA512[merchantId|customerId|UPPERCASE(SHA512[merchantToken])])
 ```
 
 ### 2. Delete Saved Card
@@ -295,7 +295,7 @@ Content-Type: application/json
 **CheckValue Generation:**
 
 ```
-SHA512(merchantId|customerId|tokenId|SHA512(merchantToken))
+UPPERCASE(SHA512[merchantId|customerId|tokenId|UPPERCASE(SHA512[merchantToken])])
 ```
 
 ### 3. Edit Saved Card
@@ -334,7 +334,7 @@ Authorization: Bearer {access_token}
 **CheckValue Generation:**
 
 ```
-SHA512(merchantId|customerId|tokenId|SHA512(merchantToken))
+UPPERCASE(SHA512[merchantId|customerId|tokenId|UPPERCASE(SHA512[merchantToken])])
 ```
 
 ### 4. Pay with Saved Card
@@ -380,7 +380,7 @@ Authorization: Bearer {access_token}
 **CheckValue Generation:**
 
 ```
-SHA512(merchantId|invoiceId|amount|currencyCode|customerId|tokenId|SHA512(merchantToken))
+UPPERCASE(SHA512[merchantId|invoiceId|amount|currencyCode|customerId|tokenId|UPPERCASE(SHA512[merchantToken])])
 ```
 
 ### 5. Add Card
