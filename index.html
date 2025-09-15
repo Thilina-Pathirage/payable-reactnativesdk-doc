@@ -374,7 +374,7 @@
                 <li><a href="#recurring-payments">Recurring Payments</a></li>
                 <li><a href="#tokenized-payments">Tokenized Payments</a></li>
                 <li><a href="#api-usage">API Usage</a></li>
-                <li><a href="#merchant-notifications">Merchant Notifications</a></li>
+                <li><a href="#payment-notifications">Payment Notifications</a></li>
                 <li><a href="#error-handling">Error Handling</a></li>
                 <li><a href="#security">Security & Compliance</a></li>
                 <li><a href="#testing">Testing</a></li>
@@ -681,47 +681,7 @@ export default function OneTimePaymentExample() {
 }</div>
         </section>
 
-        <section id="recurring-payments">
-            <h2>Recurring Payments</h2>
-
-            <h3>Flow Overview</h3>
-            <div class="flow-diagram">
-                <ol>
-                    <li>Initialize recurring payment with required parameters</li>
-                    <li>Generate checksum value</li>
-                    <li>Present payment screen to user</li>
-                    <li>Process initial payment</li>
-                    <li>Set up recurring schedule</li>
-                    <li>Handle recurring payments</li>
-                </ol>
-            </div>
-
-
-            <h3>Checksum Generation for Recurring Payments</h3>
-
-            <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|customerRefNo|UPPERCASE(SHA512[merchantToken])])</code></p>
-
-            <div class="code-block js">const getRecurringCheckValue = (
-  merchantKey: string,
-  merchantToken: string,
-  invoiceId: string,
-  amount: string,
-  currencyCode: string,
-  customerRefNo: string
-) => {
-  const hash1 = CryptoJS.SHA512(merchantToken)
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-
-  const checkValue = CryptoJS.SHA512(
-    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${customerRefNo}|${hash1}`
-  )
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-
-  return checkValue;
-};</div>
-        </section>
+        
 
         <section id="tokenized-payments">
             <h2>Tokenized Payments</h2>
@@ -925,39 +885,65 @@ Authorization: {basicAuthToken}</div>
             </div>
         </section>
 
-        <section id="merchant-notifications">
-            <h2>Merchant Notifications</h2>
+        <section id="payment-notifications">
+            <h2>Payment Notifications</h2>
 
             <h3>Webhook Setup</h3>
-            <ol>
-                <li>Configure your webhook endpoint in the SDK initialization</li>
-                <li>Implement webhook handler to process notifications</li>
-                <li>Validate incoming notifications using checksum</li>
-            </ol>
+            <p>Payable Payment Gateway sends payment status notifications to your <code>notifyUrl</code>. You need to implement a server endpoint to receive these notifications.</p>
 
-            <h3>Webhook Payload Structure</h3>
+            <h3>One-Time Payment Response</h3>
             <div class="code-block json">{
-  merchantKey: "YOUR_MERCHANT_KEY",
-  payableOrderId: "oid-XXXXXXXX-XXX-XXXX-XXXX-XXXX",
-  payableTransactionId: "XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXX",
-  payableAmount: "100.00",
-  payableCurrency: "LKR",
-  invoiceNo: "INV123456",
-  statusCode: 1,
-  statusMessage: "SUCCESS",
-  paymentType: 1,
-  paymentMethod: 1,
-  paymentScheme: "MASTERCARD",
-  custom1: "optional data",
-  custom2: "optional data",
-  cardHolderName: "John Doe",
-  cardNumber: "512345xxxxxx0008",
-  checkValue: "GENERATED_CHECKSUM"
+  "merchantKey": "YOUR_MERCHANT_KEY",
+  "payableOrderId": "oid-XXXXXXXX-XXX-XXXX-XXXX-XXXX",
+  "payableTransactionId": "XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXX",
+  "payableAmount": "100.00",
+  "payableCurrency": "LKR",
+  "invoiceNo": "YOUR_INVOICE_ID",
+  "statusCode": 1,
+  "statusMessage": "SUCCESS",
+  "paymentType": 1,
+  "paymentMethod": 1,
+  "paymentScheme": "MASTERCARD",
+  "custom1": "YOUR_CUSTOM_1",
+  "custom2": "YOUR_CUSTOM_2",
+  "cardHolderName": "CARD_HOLDER_NAME",
+  "cardNumber": "512345xxxxxx0008",
+  "checkValue": "YOUR_CHECK_VALUE"
 }</div>
 
-            <h3>Webhook Response</h3>
+            <h3>Tokenize Payment Response</h3>
             <div class="code-block json">{
-  "Status": 200
+  "merchantKey": "YOUR_MERCHANT_KEY",
+  "statusCode": 1,
+  "payableTransactionId": "XXXXXXXX-XXX-XXXX-XXXX-XXXXXXXXX",
+  "paymentMethod": 1,
+  "payableOrderId": "oid-XXXXXXXX-XXX-XXXX-XXXX-XXXX",
+  "invoiceNo": "YOUR_INVOICE_ID",
+  "payableAmount": "100.00",
+  "payableCurrency": "LKR",
+  "statusMessage": "SUCCESS",
+  "paymentType": 1,
+  "paymentScheme": "MASTERCARD",
+  "cardHolderName": "CARD_HOLDER_NAME",
+  "cardNumber": "512345xxxxxx0008",
+  "paymentId": "YOUR_PAYMENT_ID",
+  "custom1": null,
+  "custom2": null,
+  "checkValue": "YOUR_CHECK_VALUE",
+  "customerRefNo": "YOUR_CUSTOMER_REF_NO",
+  "token": {
+    "tokenId": "YOUR_TOKEN_ID",
+    "maskedCardNo": "512345xxxxxx0008",
+    "exp": "MMYY",
+    "reference": null,
+    "nickname": null,
+    "tokenStatus": "SUCCESS",
+    "defaultCard": 0
+  },
+  "merchantId": "YOUR_MERCHANT_ID",
+  "customerId": "YOUR_CUSTOMER_ID",
+  "uid": "YOUR_UID",
+  "statusIndicator": "YOUR_STATUS_INDICATOR"
 }</div>
         </section>
 
