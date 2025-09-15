@@ -363,21 +363,24 @@
         </header>
 
         <div id="react-native-content" class="content-section active">
-            <div class="toc">
-                <h2>Table of Contents</h2>
-                <ul>
-                    <li><a href="#installation">Installation</a></li>
-                    <li><a href="#getting-started">Getting Started</a></li>
-                    <li><a href="#configuration">Configuration</a></li>
-                    <li><a href="#one-time-payments">One-Time Payments</a></li>
-                    <li><a href="#recurring-payments">Recurring Payments</a></li>
-                    <li><a href="#tokenized-payments">Tokenized Payments</a></li>
-                    <li><a href="#merchant-notifications">Merchant Notifications</a></li>
-                    <li><a href="#error-handling">Error Handling</a></li>
-                    <li><a href="#security">Security & Compliance</a></li>
-                    <li><a href="#api-reference">API Reference</a></li>
-                </ul>
-            </div>
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#one-time-payments">One-Time Payments</a></li>
+                <li><a href="#recurring-payments">Recurring Payments</a></li>
+                <li><a href="#tokenized-payments">Tokenized Payments</a></li>
+                <li><a href="#api-usage">API Usage</a></li>
+                <li><a href="#merchant-notifications">Merchant Notifications</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#security">Security & Compliance</a></li>
+                <li><a href="#testing">Testing</a></li>
+                <li><a href="#api-reference">API Reference</a></li>
+                <li><a href="#faqs">FAQs & Troubleshooting</a></li>
+            </ul>
+        </div>
 
         <section id="installation">
             <h2>Installation</h2>
@@ -732,28 +735,6 @@ export default function OneTimePaymentExample() {
 
             <h3>API Endpoints</h3>
 
-            <h4>Token Creation</h4>
-            <div class="api-endpoint">
-                <div class="endpoint-method">POST /api/v1/tokens</div>
-                <div class="code-block json">Content-Type: application/json
-
-Request Body:
-{
-  "merchantKey": "YOUR_MERCHANT_KEY",
-  "invoiceId": "INV123456",
-  "amount": "100.00",
-  "currencyCode": "LKR",
-  "customerRefNo": "CUST123456",
-  "checkValue": "GENERATED_CHECKSUM"
-}
-
-Response:
-{
-  "status": "SUCCESS",
-  "tokenId": "TOKEN123456",
-  "expiryDate": "2025-12-31"
-}</div>
-            </div>
 
             <h4>Token Usage</h4>
             <div class="api-endpoint">
@@ -969,6 +950,115 @@ function validateWebhook(webhookData, merchantToken) {
 }</div>
         </section>
 
+        <section id="api-usage">
+            <h2>API Usage</h2>
+
+            <h3>Environment Configuration</h3>
+            <ul>
+                <li><strong>Sandbox Environment</strong>: Used for testing and development
+                    <ul>
+                        <li>Environment: <code>'sandbox'</code></li>
+                        <li>Used for testing payment flows without real transactions</li>
+                    </ul>
+                </li>
+                <li><strong>QA Environment</strong>: Quality assurance testing
+                    <ul>
+                        <li>Environment: <code>'qa'</code></li>
+                        <li>Used for pre-production testing</li>
+                    </ul>
+                </li>
+                <li><strong>Development Environment</strong>: Local development
+                    <ul>
+                        <li>Environment: <code>'dev'</code></li>
+                        <li>Used during development phase</li>
+                    </ul>
+                </li>
+                <li><strong>Production Environment</strong>: Live transactions
+                    <ul>
+                        <li>Environment: <code>'production'</code></li>
+                        <li>Used for live customer payments</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>Payment Types</h3>
+            <ul>
+                <li><strong>One-Time Payment (Type: 1)</strong>: Single transaction payment</li>
+                <li><strong>Recurring Payment (Type: 2)</strong>: Subscription-based payments</li>
+                <li><strong>Tokenized Payment (Type: 3)</strong>: Save card for future payments</li>
+            </ul>
+        </section>
+
+        <section id="testing">
+            <h2>Testing</h2>
+
+            <h3>Test Environment Setup</h3>
+            <p>Use the sandbox environment for testing your integration:</p>
+            <div class="code-block js">const data = {
+  environment: 'sandbox', // Always use 'sandbox' for testing
+  logoUrl: 'https://your-logo-url.com/logo.png',
+  returnUrl: 'https://your-return-url.com',
+  webhookUrl: 'https://your-webhook-url.com',
+  merchantKey: 'YOUR_SANDBOX_MERCHANT_KEY',
+  merchantToken: 'YOUR_SANDBOX_MERCHANT_TOKEN',
+};</div>
+
+            <h3>Test Card Numbers</h3>
+            <p>Use the following test card numbers for different scenarios:</p>
+            <ul>
+                <li><strong>Success Payment</strong>: 4111 1111 1111 1111</li>
+                <li><strong>Failed Payment</strong>: 4000 0000 0000 0002</li>
+                <li><strong>Insufficient Funds</strong>: 4000 0000 0000 9995</li>
+                <li><strong>Card Declined</strong>: 4000 0000 0000 0069</li>
+            </ul>
+
+            <h3>Test Amounts</h3>
+            <ul>
+                <li><strong>Success</strong>: Any amount ≥ 2.00</li>
+                <li><strong>Failure</strong>: Any amount that triggers specific error conditions</li>
+                <li><strong>Tokenization</strong>: Amount ≥ 2.00 (or 0.00 if <code>doFirstPayment = false</code>)</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>Important:</strong> Never use real card numbers or merchant credentials in test environments. Always use the provided sandbox credentials and test card numbers.
+            </div>
+        </section>
+
+        <section id="faqs">
+            <h2>FAQs & Troubleshooting</h2>
+
+            <h3>Frequently Asked Questions</h3>
+
+            <h4>Q: How do I get my merchant credentials?</h4>
+            <p>A: Contact PAYable support at +94 11 777 6 777 or visit <a href="https://www.payable.lk" target="_blank">https://www.payable.lk</a> to register and obtain your credentials.</p>
+
+            <h4>Q: What currencies are supported?</h4>
+            <p>A: Currently, only LKR (Sri Lankan Rupee) is supported for transactions.</p>
+
+            <h4>Q: Can I test payments without real money?</h4>
+            <p>A: Yes, use the sandbox environment with test card numbers provided in the Testing section.</p>
+
+            <h4>Q: How do I handle failed payments?</h4>
+            <p>A: Implement proper error handling using the <code>onPaymentError</code> callback. Check error codes in the Error Handling section.</p>
+
+            <h4>Q: Are webhooks mandatory?</h4>
+            <p>A: Yes, webhooks are essential for receiving payment confirmations and should be implemented for production use.</p>
+
+            <h3>Common Issues & Solutions</h3>
+
+            <h4>Issue: Checksum validation fails</h4>
+            <p><strong>Solution:</strong> Ensure the exact field order and SHA-512 hashing. Check for extra spaces or incorrect merchant credentials.</p>
+
+            <h4>Issue: Webhook not received</h4>
+            <p><strong>Solution:</strong> Ensure your webhook URL is publicly accessible and can receive POST requests. Test with tools like ngrok for local development.</p>
+
+            <h4>Issue: Payment screen not loading</h4>
+            <p><strong>Solution:</strong> Verify all required parameters are provided and merchant credentials are correct. Check console for JavaScript errors.</p>
+
+            <h4>Issue: Tokenization not working</h4>
+            <p><strong>Solution:</strong> Ensure <code>isSaveCard: "1"</code> and valid <code>customerRefNo</code>. Check that amount meets minimum requirements.</p>
+        </section>
+
         <section id="api-reference">
             <h2>API Reference</h2>
 
@@ -1012,9 +1102,12 @@ function validateWebhook(webhookData, merchantToken) {
                     <li><a href="#react-js-checkvalue">CheckValue Generation</a></li>
                     <li><a href="#react-js-tokenization">Additional Tokenization Features</a></li>
                     <li><a href="#react-js-notifications">Payment Notifications</a></li>
+                    <li><a href="#react-js-error-handling">Error Handling</a></li>
                     <li><a href="#react-js-integration">React.js Integration</a></li>
+                    <li><a href="#react-js-core-functions">Core Functions</a></li>
                     <li><a href="#react-js-security">Security</a></li>
                     <li><a href="#react-js-support">Support</a></li>
+                    <li><a href="#react-js-license">License</a></li>
                 </ul>
             </div>
 
@@ -1043,9 +1136,159 @@ function validateWebhook(webhookData, merchantToken) {
                 <h3>Import</h3>
                 <div class="code-block js">import { payablePayment } from "payable-ipg-js";</div>
 
+                <h3>Create Your Payment Request</h3>
+                <p>Create your payment request with basic required fields.</p>
+
+                <h4>Required Form Parameters</h4>
+                <ul>
+                    <li><code>notifyUrl</code> - URL to callback the status of the payment (Needs to be a URL accessible on a public IP/domain)</li>
+                    <li><code>returnUrl</code> - URL to redirect users when success</li>
+                    <li><code>logoUrl</code> - Logo url to show the logo in SDK</li>
+                    <li><code>merchantKey</code> - Payable Merchant ID [Given by PAYable]</li>
+                    <li><code>currencyCode</code> - Currency Code (LKR/EUR/GBP/USD)</li>
+                    <li><code>checkValue</code> - Generated hash value to ensure extra security</li>
+                    <li><code>orderDescription</code> - Small Description for the Order</li>
+                    <li><code>amount</code> - Total Payment Amount</li>
+                    <li><code>invoiceId</code> - Invoice ID generated by the merchant</li>
+                    <li><code>paymentType</code> - Payment Type (1 means ONE_TIME_PAYMENT, 2 means RECURRING_PAYMENT, 3 means TOKENIZE_PAYMENT)</li>
+                    <li><code>customerFirstName</code> - Customer's First Name</li>
+                    <li><code>customerLastName</code> - Customer's Last Name</li>
+                    <li><code>customerMobilePhone</code> - Customer's Mobile No</li>
+                    <li><code>customerEmail</code> - Customer's Email</li>
+                    <li><code>billingAddressStreet</code> - Billing Address Line1</li>
+                    <li><code>billingAddressCity</code> - Billing City</li>
+                    <li><code>billingAddressCountry</code> - Billing Country</li>
+                </ul>
+
+                <h4>Tokenization Parameters (Required for Card Tokenization || paymentType = 3)</h4>
+                <ul>
+                    <li><code>isSaveCard</code> - Set to "1" to save card for future use</li>
+                    <li><code>doFirstPayment</code> - Set to "1" to charge immediately</li>
+                    <li><code>customerRefNo</code> - Customer reference number for tokenization</li>
+                </ul>
+
+                <h4>Payment Type Parameters (Required if paymentType = 2)</h4>
+                <ul>
+                    <li><code>startDate</code> - Payment Start Date</li>
+                    <li><code>endDate</code> - Payment End Date (It can be any date or FOREVER)</li>
+                    <li><code>recurringAmount</code> - Recurring payment Amount</li>
+                    <li><code>interval</code> - Payment Interval (It can be MONTHLY, ANNUALLY)</li>
+                    <li><code>isRetry</code> - Is Retry</li>
+                    <li><code>retryAttempts</code> - Retry Attempts</li>
+                </ul>
+
+                <h4>Optional Form Parameters</h4>
+                <ul>
+                    <li><code>custom1</code> - Merchant specific data, a Custom 1</li>
+                    <li><code>custom2</code> - Merchant specific data, a Custom 2</li>
+                    <li><code>customerPhone</code> - Customer's Phone No</li>
+                    <li><code>billingAddressStreet2</code> - Billing Address Line2</li>
+                    <li><code>billingCompanyName</code> - Billing Company</li>
+                    <li><code>billingAddressPostcodeZip</code> - Billing Postal Code</li>
+                    <li><code>billingAddressStateProvince</code> - Billing Province</li>
+                    <li><code>shippingContactFirstName</code> - Shipping Contact First Name</li>
+                    <li><code>shippingContactLastName</code> - Shipping Contact Last Name</li>
+                    <li><code>shippingContactMobilePhone</code> - Shipping Contact Mobile No</li>
+                    <li><code>shippingContactPhone</code> - Shipping Contact Phone No</li>
+                    <li><code>shippingContactEmail</code> - Shipping Contact Email</li>
+                    <li><code>shippingCompanyName</code> - Shipping Contact Company</li>
+                    <li><code>shippingAddressStreet</code> - Shipping Address Line1</li>
+                    <li><code>shippingAddressStreet2</code> - Shipping Address Line2</li>
+                    <li><code>shippingAddressCity</code> - Shipping City</li>
+                    <li><code>shippingAddressStateProvince</code> - Shipping Province</li>
+                    <li><code>shippingAddressCountry</code> - Shipping Country (LKA)</li>
+                    <li><code>shippingAddressPostcodeZip</code> - Shipping Postal Code</li>
+                </ul>
+
+                <div class="highlight">
+                    <strong>Important:</strong> In Request, <code>checkValue</code> is a combination of merchant key, invoice id, amount, currency parameter set in a predefined sequence given by PAYable which then encrypted with merchant token (a unique Secret value for the Merchant which was shared by PAYable) using SHA-512.
+                </div>
+
+                <div class="highlight">
+                    <strong>Important:</strong> The checkValue generation format is different for regular one-time payments vs tokenize payments.
+                </div>
+
+                <h4>Sample Form with Tokenization</h4>
+                <div class="code-block js">const payment = {
+  checkValue: "Your Check Value", // Use getCheckValueToken() for tokenization
+  orderDescription: "Payment for furni",
+  invoiceId: "INVGl2lrQHEEm",
+  logoUrl: "https://ipgv2-comm.payable.lk/images/chocolate2.png",
+  notifyUrl: "https://yoursite.com/v1/webhook/payment",
+  returnUrl: "https://yoursite.com/receipt",
+  merchantKey: "F4D847FB8BF0EF52",
+  customerFirstName: "John",
+  customerLastName: "Doe",
+  customerMobilePhone: "0715117264",
+  customerPhone: "1232131233",
+  customerEmail: "john.doe@example.com",
+  billingCompanyName: "Example Company",
+  billingAddressStreet: "123 Main Street",
+  billingAddressStreet2: "Apt 1",
+  billingAddressCity: "Colombo",
+  billingAddressStateProvince: "Western",
+  billingAddressCountry: "LK",
+  billingAddressPostcodeZip: "10000",
+  amount: "100.00",
+  currencyCode: "LKR",
+  paymentType: "1",
+  isSaveCard: "1", // Save card for future use
+  customerRefNo: "CUST_123456789", // Customer reference for tokenization
+  doFirstPayment: "1", // Charge immediately
+};</div>
+
+                <div class="highlight">
+                    <strong>Note:</strong> Amount validation rules:
+                    <ul style="margin-top: 10px;">
+                        <li><strong>amount</strong>: Must be ≥ 2.00 (standard validation applies)</li>
+                        <li>If <code>isSaveCard = 1</code> and <code>doFirstPayment = 0</code>: Can be 0.00 (tokenize only)</li>
+                        <li>Otherwise: Must be ≥ 2.00</li>
+                    </ul>
+                </div>
+
+                <h3>Communicate with PAYable React.js SDK</h3>
+                <p>Submit your form json data into <code>payablePayment()</code>. <code>payment</code> is the payment object and <code>testMode</code> is boolean.</p>
+
+                <div class="code-block js">payablePayment(payment, testMode);</div>
+
+                <h4>Environment Configuration</h4>
+                <ul>
+                    <li><strong>Test Mode (<code>testMode = true</code>)</strong>: Connects to Sandbox environment for testing</li>
+                    <li><strong>Live Mode (<code>testMode = false</code>)</strong>: Connects to Production environment for live payments</li>
+                </ul>
+
+                <h4>Example</h4>
+                <div class="code-block js">// For testing (Sandbox)
+payablePayment(payment, true);
+
+// For live payments (Production)
+payablePayment(payment, false);</div>
 
                 <h3>Payment Flow</h3>
                 <p>The Payable Tokenize Payment Gateway Integration allows customers to securely save their card information for future payments. When a customer clicks the payment/checkout button, they are redirected to the Payable Payment Gateway where they can enter their card credentials.</p>
+            </section>
+
+            <section id="react-js-error-handling">
+                <h2>Payment Error Details</h2>
+
+                <p>Error will be field validation (code: 3009) and other common errors.</p>
+
+                <h3>Field Validation Error</h3>
+                <div class="code-block json">{
+  "status": 3009,
+  "success": false,
+  "error": {
+    "startDate": ["Start date should be today date."]
+  }
+}</div>
+
+                <h3>Other Common Errors</h3>
+                <p>Status can be 400/500/any other:</p>
+                <div class="code-block json">{
+  "status": 400,
+  "success": false,
+  "error": "Something went wrong. Please contact your merchant."
+}</div>
             </section>
 
             <section id="react-js-checkvalue">
@@ -1117,6 +1360,12 @@ function getCheckValue(
 
             <section id="react-js-tokenization">
                 <h2>Additional Tokenization Features</h2>
+
+                <h3>Environment URLs</h3>
+                <ul>
+                    <li><strong>Live Root URL</strong>: <code>POST https://ipgpayment.payable.lk</code></li>
+                    <li><strong>Sandbox Root URL</strong>: <code>POST https://sandboxipgpayment.payable.lk</code></li>
+                </ul>
 
                 <h3>API Endpoints</h3>
 
@@ -1310,6 +1559,46 @@ export default TokenizePayment;</div>
                     <li><strong>Support</strong>: +94 11 777 6 777</li>
                     <li><strong>Website</strong>: <a href="https://www.payable.lk" target="_blank">https://www.payable.lk</a></li>
                 </ul>
+            </section>
+
+            <section id="react-js-core-functions">
+                <h2>Core Functions</h2>
+
+                <h3>Main Function</h3>
+                <div class="code-block js">// Main payment function
+payablePayment(paymentObject, testMode);
+
+// Parameters:
+// paymentObject: Object containing all payment parameters
+// testMode: Boolean - true for sandbox, false for production</div>
+
+                <h3>Environment Modes</h3>
+                <ul>
+                    <li><strong>Test Mode (<code>testMode = true</code>)</strong>: Connects to sandbox environment for testing</li>
+                    <li><strong>Live Mode (<code>testMode = false</code>)</strong>: Connects to production environment for real payments</li>
+                </ul>
+
+                <h3>Payment Flow</h3>
+                <div class="flow-diagram">
+                    <ol>
+                        <li>Create payment object with required parameters</li>
+                        <li>Generate checkValue using appropriate formula</li>
+                        <li>Call payablePayment() function</li>
+                        <li>User is redirected to payment gateway</li>
+                        <li>Payment processing occurs</li>
+                        <li>User returns to your application</li>
+                        <li>Webhook notification sent to your server</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="react-js-license">
+                <h2>License</h2>
+                <p>This tokenize payment React.js SDK is provided by PAYable (Pvt) Ltd.</p>
+
+                <div class="highlight">
+                    <strong>Important:</strong> This SDK is proprietary software provided by PAYable. Please ensure compliance with the terms of service and licensing agreements.
+                </div>
             </section>
 
             <div class="support-info">
