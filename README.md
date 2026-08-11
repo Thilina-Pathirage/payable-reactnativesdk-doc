@@ -20,14 +20,14 @@ A comprehensive React Native SDK for integrating Internet Payment Gateway (IPG) 
 ## Installation
 
 ```sh
-npm install ipg-reactnative-sdk
+npm install ipg-reactnative-sdk-sandbox
 ```
 
 ## Getting Started
 
 1. Import the SDK in your React Native application:
 ```js
-import PayableIPG from 'ipg-reactnative-sdk';
+import PayableIPG from 'ipg-reactnative-sdk-sandbox';
 ```
 
 2. Initialize the SDK with your merchant credentials:
@@ -136,7 +136,7 @@ const getCheckValue = (
 ```tsx
 import React, { useMemo, useState } from 'react';
 import { View, Button, Alert } from 'react-native';
-import PayableIPG from 'ipg-reactnative-sdk';
+import PayableIPG from 'ipg-reactnative-sdk-sandbox';
 import CryptoJS from 'crypto-js';
 
 const getCheckValue = (
