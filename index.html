@@ -343,6 +343,25 @@
         .content-section.active {
             display: block;
         }
+
+        .warning-box {
+            background: #3b2f1e;
+            border-left: 4px solid #ecc94b;
+            color: #f0e6d2;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .warning-box strong {
+            color: #ecc94b;
+        }
+
+        .warning-box code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -403,8 +422,11 @@
   returnUrl: 'https://your-return-url.com',
   webhookUrl: 'https://your-webhook-url.com',
   merchantKey: 'YOUR_MERCHANT_KEY',
-  merchantToken: 'YOUR_MERCHANT_TOKEN',
 };</div>
+
+            <div class="warning-box">
+                <strong>⚠️ Do not put <code>merchantToken</code> in your app.</strong> The <code>merchantToken</code> is a secret. Anything bundled into a React Native app ships inside the APK/IPA and can be extracted, which would let anyone forge a <code>checkValue</code> for any invoice and amount. Keep the token on your backend and have your backend generate the <code>checkValue</code> — see <a href="#one-time-payments">Checksum Generation</a>.
+            </div>
         </section>
 
         <section id="create-payment-request">
@@ -494,7 +516,11 @@
                 <li><strong>returnUrl</strong>: URL to redirect users after payment completion</li>
                 <li><strong>webhookUrl</strong>: URL to receive payment notifications</li>
                 <li><strong>merchantKey</strong>: Your merchant key provided by PAYable</li>
-                <li><strong>merchantToken</strong>: Your merchant token provided by PAYable</li>
+            </ul>
+
+            <h3>Backend-only (never in the app)</h3>
+            <ul>
+                <li><strong>merchantToken</strong>: Your merchant token provided by PAYable. Stored on your server and used only to generate the <code>checkValue</code>.</li>
             </ul>
         </section>
 
@@ -514,7 +540,12 @@
 
 
             <h3>Checksum Generation</h3>
-            <p>The checksum is generated using SHA-512 hashing algorithm. Here's the process:</p>
+
+            <div class="warning-box">
+                <strong>Generate the <code>checkValue</code> on your backend, not in the app.</strong> It requires the <code>merchantToken</code>, which must never leave your server. Expose an endpoint (e.g. <code>POST /payments/checkvalue</code>) that takes the invoice details, signs them, and returns the <code>checkValue</code> to the app.
+            </div>
+
+            <p>The checksum is generated using SHA-512 hashing algorithm. Here's the process (Node.js example — runs on your server):</p>
 
             <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|UPPERCASE(SHA512[merchantToken])])</code></p>
 
@@ -563,31 +594,14 @@ const getCheckValue = (
 }</div>
 
             <h3>React Native Integration Example (One-Time Payment)</h3>
-            <div class="code-block tsx">import React, { useMemo, useState } from 'react';
+            <p>The app never holds the <code>merchantToken</code>. It asks your backend for the <code>checkValue</code>, then renders the payment screen.</p>
+            <div class="code-block tsx">import React, { useEffect, useMemo, useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import PayableIPG from 'ipg-reactnative-sdk-sandbox';
-import CryptoJS from 'crypto-js';
-
-const getCheckValue = (
-  merchantKey: string,
-  merchantToken: string,
-  invoiceId: string,
-  amount: string,
-  currencyCode: string
-) => {
-  const hash1 = CryptoJS.SHA512(merchantToken)
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-
-  return CryptoJS.SHA512(
-    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${hash1}`
-  )
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-};
 
 export default function OneTimePaymentExample() {
   const [showIpg, setShowIpg] = useState(false);
+  const [checkValue, setCheckValue] = useState&lt;string | null>(null);
 
   const PAYableIPGClient = useMemo(
     () => ({
@@ -596,7 +610,7 @@ export default function OneTimePaymentExample() {
       returnUrl: 'https://your-return-url.com',
       webhookUrl: 'https://your-webhook-url.com',
       merchantKey: 'YOUR_MERCHANT_KEY',
-      merchantToken: 'YOUR_MERCHANT_TOKEN',
+      // No merchantToken here — it stays on your backend.
     }),
     []
   );
@@ -619,15 +633,25 @@ export default function OneTimePaymentExample() {
       billingAddressStreet: '123 Main St',
       billingAddressCity: 'Colombo',
       billingAddressCountry: 'LKA',
-      checkValue: getCheckValue(
-        PAYableIPGClient.merchantKey,
-        PAYableIPGClient.merchantToken,
-        invoiceId,
-        amount,
-        currencyCode
-      ),
     };
-  }, [PAYableIPGClient]);
+  }, []);
+
+  // Ask your backend to sign the payment. Your server holds the merchantToken,
+  // generates the checkValue (see "Checksum Generation") and returns it.
+  useEffect(() => {
+    fetch('https://your-backend.com/payments/checkvalue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        invoiceId: payment.invoiceId,
+        amount: payment.amount,
+        currencyCode: payment.currencyCode,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setCheckValue(data.checkValue))
+      .catch(() => Alert.alert('Error', 'Could not initialize payment'));
+  }, [payment]);
 
   const handlePaymentStarted = () => {
     // Optional: track analytics
@@ -650,10 +674,14 @@ export default function OneTimePaymentExample() {
   return (
     &lt;View style={{ flex: 1 }}>
       {!showIpg && (
-        &lt;Button title="Pay LKR 100.00" onPress={() => setShowIpg(true)} />
+        &lt;Button
+          title="Pay LKR 100.00"
+          disabled={!checkValue}
+          onPress={() => setShowIpg(true)}
+        />
       )}
 
-      {showIpg && (
+      {showIpg && checkValue && (
         &lt;PayableIPG
           PAYableIPGClient={PAYableIPGClient}
           packageName={"com.yourapp"}
@@ -669,7 +697,7 @@ export default function OneTimePaymentExample() {
           billingAddressStreet={payment.billingAddressStreet}
           billingAddressCity={payment.billingAddressCity}
           billingAddressCountry={payment.billingAddressCountry}
-          checkValue={payment.checkValue}
+          checkValue={checkValue}
           onPaymentStarted={handlePaymentStarted}
           onPaymentCompleted={handlePaymentCompleted}
           onPaymentError={handlePaymentError}
@@ -720,6 +748,8 @@ export default function OneTimePaymentExample() {
 };</div>
 
             <h3>Checksum Generation for Token Payments</h3>
+
+            <p>Runs on your backend — same rule as one-time payments, the <code>merchantToken</code> never goes into the app.</p>
 
             <p><strong>Format:</strong> <code>UPPERCASE(SHA512[merchantKey|invoiceId|amount|currencyCode|customerRefNo|tokenId|UPPERCASE(SHA512[merchantToken])])</code></p>
 
@@ -974,11 +1004,12 @@ Authorization: {basicAuthToken}</div>
             <h3>Important Security Notes</h3>
             <ul>
                 <li><strong>merchantToken</strong> is a <strong>secret</strong> shared by PAYable for your merchant</li>
+                <li>Never expose your merchantToken in client-side code. A React Native bundle is client-side code — anything in it ships inside the APK/IPA and can be extracted</li>
+                <li>Generate every <code>checkValue</code> on your backend and return it to the app; the app only ever sees the <code>merchantKey</code> and the generated <code>checkValue</code></li>
+                <li>Validate webhook responses using checkValue on your server (this also needs the merchantToken)</li>
                 <li>Use exact field order and string concatenation with <code>|</code> as the delimiter</li>
-                <li>Always validate webhook responses using checkValue</li>
                 <li>Store tokens securely in your database</li>
                 <li>Use HTTPS for all communications</li>
-                <li>Never expose your merchantToken in client-side code</li>
             </ul>
 
             <h3>CheckValue Validation</h3>
@@ -1058,7 +1089,7 @@ function validateWebhook(webhookData, merchantToken) {
   returnUrl: 'https://your-return-url.com',
   webhookUrl: 'https://your-webhook-url.com',
   merchantKey: 'YOUR_SANDBOX_MERCHANT_KEY',
-  merchantToken: 'YOUR_SANDBOX_MERCHANT_TOKEN',
+  // Your sandbox merchantToken stays on your backend, same as production.
 };</div>
 
             <h3>Test Card Numbers</h3>

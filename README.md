@@ -38,9 +38,10 @@ const data = {
   returnUrl: 'https://your-return-url.com',
   webhookUrl: 'https://your-webhook-url.com',
   merchantKey: 'YOUR_MERCHANT_KEY',
-  merchantToken: 'YOUR_MERCHANT_TOKEN',
 };
 ```
+
+> ⚠️ **Do not put `merchantToken` in your app.** The `merchantToken` is a secret. Anything bundled into a React Native app ships inside the APK/IPA and can be extracted, which would let anyone forge a `checkValue` for any invoice and amount. Keep the token on your backend and have your backend generate the `checkValue` — see [Checksum Generation](#checksum-generation).
 
 ## Configuration
 
@@ -50,7 +51,9 @@ const data = {
 - `returnUrl`: URL to redirect users after payment completion
 - `webhookUrl`: URL to receive payment notifications
 - `merchantKey`: Your merchant key provided by PAYable
-- `merchantToken`: Your merchant token provided by PAYable
+
+### Backend-only (never in the app)
+- `merchantToken`: Your merchant token provided by PAYable. Stored on your server and used only to generate the `checkValue`.
 
 ## One-Time Payments
 
@@ -81,7 +84,10 @@ const paymentData = {
 ```
 
 ### Checksum Generation
-The checksum is generated using SHA-512 hashing algorithm. Here's the process:
+
+**Generate the `checkValue` on your backend, not in the app.** It requires the `merchantToken`, which must never leave your server. Expose an endpoint (e.g. `POST /payments/checkvalue`) that takes the invoice details, signs them, and returns the `checkValue` to the app.
+
+The checksum is generated using SHA-512 hashing algorithm. Here's the process (Node.js example — runs on your server):
 
 ```js
 import CryptoJS from 'crypto-js';
@@ -133,32 +139,16 @@ const getCheckValue = (
 
 ### React Native Integration Example (One-Time Payment)
 
+The app never holds the `merchantToken`. It asks your backend for the `checkValue`, then renders the payment screen.
+
 ```tsx
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Button, Alert } from 'react-native';
 import PayableIPG from 'ipg-reactnative-sdk-sandbox';
-import CryptoJS from 'crypto-js';
-
-const getCheckValue = (
-  merchantKey: string,
-  merchantToken: string,
-  invoiceId: string,
-  amount: string,
-  currencyCode: string
-) => {
-  const hash1 = CryptoJS.SHA512(merchantToken)
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-
-  return CryptoJS.SHA512(
-    `${merchantKey}|${invoiceId}|${amount}|${currencyCode}|${hash1}`
-  )
-    .toString(CryptoJS.enc.Hex)
-    .toUpperCase();
-};
 
 export default function OneTimePaymentExample() {
   const [showIpg, setShowIpg] = useState(false);
+  const [checkValue, setCheckValue] = useState<string | null>(null);
 
   const PAYableIPGClient = useMemo(
     () => ({
@@ -167,7 +157,7 @@ export default function OneTimePaymentExample() {
       returnUrl: 'https://your-return-url.com',
       webhookUrl: 'https://your-webhook-url.com',
       merchantKey: 'YOUR_MERCHANT_KEY',
-      merchantToken: 'YOUR_MERCHANT_TOKEN',
+      // No merchantToken here — it stays on your backend.
     }),
     []
   );
@@ -190,15 +180,25 @@ export default function OneTimePaymentExample() {
       billingAddressStreet: '123 Main St',
       billingAddressCity: 'Colombo',
       billingAddressCountry: 'LKA',
-      checkValue: getCheckValue(
-        PAYableIPGClient.merchantKey,
-        PAYableIPGClient.merchantToken,
-        invoiceId,
-        amount,
-        currencyCode
-      ),
     };
-  }, [PAYableIPGClient]);
+  }, []);
+
+  // Ask your backend to sign the payment. Your server holds the merchantToken,
+  // generates the checkValue (see "Checksum Generation") and returns it.
+  useEffect(() => {
+    fetch('https://your-backend.com/payments/checkvalue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        invoiceId: payment.invoiceId,
+        amount: payment.amount,
+        currencyCode: payment.currencyCode,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setCheckValue(data.checkValue))
+      .catch(() => Alert.alert('Error', 'Could not initialize payment'));
+  }, [payment]);
 
   const handlePaymentStarted = () => {
     // Optional: track analytics
@@ -221,10 +221,14 @@ export default function OneTimePaymentExample() {
   return (
     <View style={{ flex: 1 }}>
       {!showIpg && (
-        <Button title="Pay LKR 100.00" onPress={() => setShowIpg(true)} />
+        <Button
+          title="Pay LKR 100.00"
+          disabled={!checkValue}
+          onPress={() => setShowIpg(true)}
+        />
       )}
 
-      {showIpg && (
+      {showIpg && checkValue && (
         <PayableIPG
           PAYableIPGClient={PAYableIPGClient}
           packageName={"com.yourapp"}
@@ -240,7 +244,7 @@ export default function OneTimePaymentExample() {
           billingAddressStreet={payment.billingAddressStreet}
           billingAddressCity={payment.billingAddressCity}
           billingAddressCountry={payment.billingAddressCountry}
-          checkValue={payment.checkValue}
+          checkValue={checkValue}
           onPaymentStarted={handlePaymentStarted}
           onPaymentCompleted={handlePaymentCompleted}
           onPaymentError={handlePaymentError}
@@ -289,6 +293,9 @@ const recurringPaymentData = {
 ```
 
 ### Checksum Generation for Recurring Payments
+
+Runs on your backend — same rule as one-time payments, the `merchantToken` never goes into the app.
+
 ```js
 const getRecurringCheckValue = (
   merchantKey: string,
@@ -346,6 +353,9 @@ const tokenPaymentData = {
 ```
 
 ### Checksum Generation for Token Payments
+
+Runs on your backend — same rule as one-time payments, the `merchantToken` never goes into the app.
+
 ```js
 const getTokenCheckValue = (
   merchantKey: string,
@@ -589,11 +599,12 @@ SHA512(merchantId|invoiceId|amount|currencyCode|customerId|tokenId|SHA512(mercha
 ### Important Security Notes
 
 - **merchantToken** is a **secret** shared by PAYable for your merchant
+- Never expose your merchantToken in client-side code. A React Native bundle is client-side code — anything in it ships inside the APK/IPA and can be extracted
+- Generate every `checkValue` on your backend and return it to the app; the app only ever sees the `merchantKey` and the generated `checkValue`
+- Validate webhook responses using checkValue on your server (this also needs the merchantToken)
 - Use exact field order and string concatenation with `|` as the delimiter
-- Always validate webhook responses using checkValue
 - Store tokens securely in your database
 - Use HTTPS for all communications
-- Never expose your merchantToken in client-side code
 
 ### CheckValue Validation
 
